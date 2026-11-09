@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FCF · Avaliação de Árbitros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --verde:#0b3b24;--verde2:#145a38;--amarelo:#f5b800;--cinza:#f3f4f3;--linha:#dfe3e0;--texto:#1d2420;--sub:#5d6862;
+  --navy:#0a0f3c;--navy2:#0d1233;--azul:#1225c9;--neon:#5b8cff;--laranja:#f07a2c;--ouro:#f5d000;--ok:#4be38a;--alerta:#ff8a4c;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:Barlow,Arial,Helvetica,sans-serif;color:var(--texto);background:#fff}
+button,input,select,textarea{font:inherit}
+.faixa{height:4px;background:var(--amarelo)}
+.topo{background:var(--cinza);display:flex;justify-content:space-between;align-items:center;padding:8px max(16px,calc((100% - 1180px)/2));font-size:14px}
+.topo nav{display:flex;gap:22px}.topo a{color:var(--texto);text-decoration:none}
+.redes{display:flex;gap:6px}.redes span{width:26px;height:26px;border-radius:50%;background:var(--verde);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.cab{display:flex;min-height:118px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);position:relative;z-index:2}
+.logo{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:0 24px 0 max(16px,calc((100% - 1180px)/2))}
+.logoimg{height:82px;width:auto;max-width:100%;display:block}
+.logo .selo{width:62px;height:78px;border:2px solid var(--verde);border-radius:0 0 26px 26px;display:grid;place-items:center;font-family:'Barlow Condensed';font-weight:700;color:var(--verde);font-size:20px}
+.logo .txt{font-family:'Barlow Condensed';color:var(--verde2);line-height:1;font-size:17px;letter-spacing:.5px}
+.logo .txt b{display:block;font-size:22px;color:var(--verde)}
+.menu{flex:1;min-width:0;background:var(--verde);clip-path:polygon(78px 0,100% 0,100% 100%,0 100%);display:flex;justify-content:flex-end;align-items:stretch;padding-right:max(16px,calc((100% - 1180px)/2))}
+.menu button{background:none;border:0;color:#fff;cursor:pointer;padding:0 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:17px;letter-spacing:.3px;border-bottom:4px solid transparent}
+.menu button svg{width:34px;height:34px;fill:#fff}
+.menu button[aria-selected=true]{border-bottom-color:var(--amarelo)}
+.menu button:focus-visible{outline:2px solid var(--amarelo);outline-offset:-4px}
+.tela{display:none}.tela.ativa{display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:36px 16px 60px}
+.chapeu{font-size:12px;font-weight:700;color:var(--verde);display:flex;gap:6px;align-items:center}
+.chapeu::before{content:"";border-left:6px solid #d9262c;border-top:4px solid transparent;border-bottom:4px solid transparent}
+h1{font-size:34px;font-weight:500;color:var(--verde);margin:4px 0 22px}
+.card{border:1px solid var(--linha);border-top:4px solid var(--verde);background:#fff;padding:22px;margin-bottom:18px}
+.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+label.c{display:flex;flex-direction:column;gap:5px;font-size:14px;color:var(--sub)}
+input,select,textarea{border:1px solid #c9cfcb;border-radius:4px;padding:9px 10px;color:var(--texto);background:#fff;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--amarelo);border-color:var(--verde)}
+details.bloco{border:1px solid var(--linha);margin-bottom:12px;background:#fff}
+details.bloco summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;background:var(--verde);color:#fff;font-size:19px;font-weight:600}
+details.bloco summary::-webkit-details-marker{display:none}
+.nb{background:var(--amarelo);color:var(--verde);border-radius:4px;padding:3px 10px;font-size:15px;min-width:92px;text-align:center}
+.item{padding:16px 20px;border-bottom:1px solid var(--linha)}
+.item:last-child{border-bottom:0}
+.item .q{display:flex;justify-content:space-between;gap:10px;font-weight:600;margin-bottom:10px}
+.item .q .peso{flex:0 0 auto;font-size:12px;color:var(--verde);background:#e7f0ea;border-radius:4px;padding:2px 8px;height:fit-content}
+.item.cg{background:#fffbea}
+.item.cg .q::after{content:"Conceito geral";font-size:11px;color:#8a6a00;background:#ffeeb0;border-radius:4px;padding:2px 8px;height:fit-content;order:-1}
+.dica{font-size:13px;color:var(--sub);margin:-4px 0 10px}
+.ops{display:flex;flex-wrap:wrap;gap:6px}
+.ops label{position:relative}
+.ops input{position:absolute;opacity:0;width:1px;height:1px}
+.ops span{display:block;border:1px solid #c9cfcb;border-radius:20px;padding:6px 14px;font-size:14px;cursor:pointer;background:#fff}
+.ops input:checked+span{background:var(--verde);border-color:var(--verde);color:#fff}
+.ops input.na:checked+span{background:#6b7570;border-color:#6b7570}
+.ops input:focus-visible+span{outline:2px solid var(--amarelo)}
+.min{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.min input{font-size:13px;padding:7px 9px}
+.acoes{display:flex;justify-content:flex-end;gap:10px;align-items:center}
+.btn{background:var(--amarelo);color:var(--verde);border:0;border-radius:4px;padding:12px 28px;font-weight:700;font-size:16px;cursor:pointer}
+.btn.sec{background:#fff;border:1px solid var(--verde)}
+.erro{color:#b3261e;font-size:14px}
+.tit{font-size:19px;font-weight:600;color:var(--verde);margin-bottom:14px}
+.campo{margin-top:16px}.lbl{font-size:14px;color:var(--sub);margin-bottom:6px}
+.scout{width:100%;border-collapse:collapse;font-size:15px}
+.scout th{text-align:left;font-size:13px;color:var(--sub);font-weight:600;padding:6px 8px;border-bottom:2px solid var(--verde)}
+.scout td{padding:6px 8px;border-bottom:1px solid var(--linha)}
+.scout td:first-child{font-weight:600}.scout input{max-width:110px;text-align:center}
+.scout th:not(:first-child),.scout td:not(:first-child){text-align:center}
+.sub2{font-size:13px;font-weight:700;color:var(--verde);margin:18px 0 6px}
+.rod{background:var(--verde);color:#dfe9e3;font-size:13px;text-align:center;padding:18px 16px}
+
+/* ===== DASHBOARD ===== */
+#dash{background:var(--navy);color:#fff;font-family:'Barlow Condensed',Barlow,sans-serif}
+.db{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 170px)}
+.side{background:var(--navy2);padding:26px 18px;display:flex;flex-direction:column;gap:18px}
+.side .marca{align-self:center;text-align:center;border:2px solid var(--neon);border-radius:8px;padding:10px 16px;font-size:22px;font-weight:700;letter-spacing:1px}
+.side .marca small{display:block;font-size:11px;font-weight:500;letter-spacing:.5px;color:#cdd6ff}
+.side label{font-size:17px;display:flex;flex-direction:column;gap:6px}
+.side select,.side input{background:var(--navy);color:#fff;border:1px solid #5a67b8;border-radius:2px}
+.main{background:var(--azul);padding:26px;display:grid;gap:18px;align-content:start}
+.gl{background:var(--navy);border:2px solid var(--neon);border-radius:14px;box-shadow:0 0 14px rgba(91,140,255,.55)}
+.perfil{display:grid;grid-template-columns:180px 1fr 150px;gap:18px}
+.foto{width:180px;height:210px;background:#e4e6ee;border-radius:4px;overflow:hidden;position:relative;cursor:pointer;display:grid;place-items:center;color:#445;font-size:48px;font-weight:700;border:0;padding:0}
+.foto img{width:100%;height:100%;object-fit:cover}
+.foto::after{content:"Trocar foto";position:absolute;bottom:0;left:0;right:0;background:rgba(10,15,60,.8);color:#fff;font-size:13px;padding:5px;opacity:0;transition:opacity .2s}
+.foto:hover::after,.foto:focus-visible::after{opacity:1}
+.col{display:grid;gap:9px;align-content:start}
+.barra{background:var(--navy);border:2px solid #3a4ab0;border-radius:4px;text-align:center;padding:8px;font-size:24px;font-weight:600}
+.lar{background:var(--laranja);border-radius:10px;text-align:center;padding:6px 10px;font-size:20px;font-weight:600}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.chips .lar{font-size:17px;line-height:1.25}
+.rank{border:4px solid var(--ouro);border-radius:18px;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px}
+.rank b{font-size:64px;color:var(--ouro);line-height:1}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.kpi{text-align:center;padding:12px}.kpi .k{font-size:18px;color:#cdd6ff}.kpi .v{font-size:40px;font-weight:700;line-height:1.1}
+.baixo{display:grid;grid-template-columns:1.7fr 1fr;gap:18px}
+.radar{padding:16px;height:430px}
+.dir{display:grid;gap:18px;align-content:start}
+.dist{padding:14px;text-align:center}
+.dist .t{font-size:18px;margin-bottom:8px}
+.dist .g{display:grid;grid-template-columns:repeat(5,1fr)}
+.dist .g div{border-left:1px solid #2a3688}.dist .g div:first-child{border:0}
+.dist .k{font-size:14px;color:#cdd6ff}.dist .v{font-size:26px;font-weight:700}
+.dest{padding:14px;text-align:center;border-color:var(--ouro);box-shadow:0 0 14px rgba(245,208,0,.45)}
+.dest .k{font-size:15px;color:#cdd6ff}.dest .v{font-size:24px;font-weight:700}
+.coment{padding:14px;font-family:Barlow,sans-serif;font-size:14px;line-height:1.5;max-height:190px;overflow:auto}
+.coment h3{font-family:'Barlow Condensed';font-size:18px;font-weight:600;margin:0 0 6px;text-align:center}
+.coment p{margin:0 0 8px;color:#dfe5ff}
+.extra{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px}
+.bx{padding:14px;text-align:center}.bx .t{font-size:18px;margin-bottom:8px}
+.bx table{width:100%;border-collapse:collapse;font-size:15px}
+.bx th{font-weight:500;color:#cdd6ff;font-size:13px;padding:3px}.bx td{padding:3px;border-top:1px solid #2a3688}
+.bx td:first-child{text-align:left}
+.tri{display:grid;grid-template-columns:repeat(3,1fr)}.tri div{border-left:1px solid #2a3688}.tri div:first-child{border:0}
+.tri .k{font-size:14px;color:#cdd6ff}.tri .v{font-size:24px;font-weight:700}
+.cert{display:grid;grid-template-columns:1fr 1fr;border:3px solid var(--ouro);border-radius:10px;margin-top:10px}
+.cert div{padding:6px}.cert div+div{border-left:1px solid #2a3688}
+.vazio{padding:60px 20px;text-align:center;font-size:22px}
+@media (max-width:980px){
+  .db{grid-template-columns:1fr}.perfil{grid-template-columns:1fr 1fr}.perfil .col{grid-column:1/-1;order:3}
+  .baixo,.extra{grid-template-columns:1fr}.kpis{gap:10px;grid-template-columns:1fr 1fr}.kpi .v{font-size:30px}
+  .side{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}.side .marca{display:none}.side label{font-size:15px}#btnReset{grid-column:1/-1}
+  .main{padding:16px}.radar{height:340px}
+  .cab{min-height:92px}.logo{padding:0 10px 0 12px}.logoimg{height:60px}
+  .menu{clip-path:polygon(44px 0,100% 0,100% 100%,0 100%);padding-left:44px}
+  .menu button{padding:0 14px;font-size:15px;gap:6px}.menu button svg{width:28px;height:28px}.logo .txt{display:none}.topo nav{gap:12px;font-size:13px}
+}
+@media (max-width:560px){.cab{min-height:76px}.logoimg{height:46px}.menu{clip-path:polygon(30px 0,100% 0,100% 100%,0 100%);padding-left:30px}.menu button{padding:0 10px;font-size:13px}.menu button svg{width:24px;height:24px}h1{font-size:28px}.item .q{flex-wrap:wrap}.wrap{padding:24px 12px 48px}.card{padding:16px}.item{padding:14px}.foto{width:100%}.min{grid-template-columns:1fr}.redes{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== CABEÇALHO + SCOUT ===== */
+.sitem{padding:16px 20px;border-bottom:1px solid var(--linha)}
+.sitem:last-child{border-bottom:0}
+.sitem>.campo:first-child{margin-top:0}
+.tabwrap{overflow-x:auto;margin-top:8px}
+.scout td input{min-width:64px}
+.nota-t{font-size:12px;color:var(--sub);margin-top:6px}
+.evs{display:grid;gap:6px;margin-top:10px}.evg{display:grid;gap:6px}
+.ev{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:#f6f8f7;border:1px solid var(--linha);padding:8px 10px;font-size:14px}
+.evl{flex:1 1 200px;font-weight:600}
+.tempo{display:flex;gap:6px}.tempo select{width:auto}.tempo input{width:84px}
+.ops.mini span{padding:4px 10px;font-size:13px}
+.cards{display:grid;gap:10px;margin-top:10px}
+.evcard{background:#fffbea;border:1px solid #f0e2a8;padding:12px 14px}
+.evt{font-weight:700;color:var(--verde)}
+.evgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0 18px}
+.tot{max-width:280px;margin-top:6px}
+.placar{display:grid;grid-template-columns:1fr 70px auto 70px 1fr;gap:10px;align-items:center;margin-top:14px}
+.placar input{text-align:center;font-weight:600}.placar span{font-weight:700;color:var(--verde)}
+.hint{font-size:13px;color:var(--sub);margin:-2px 0 6px}
+.notas{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px}
+.algo{border:1px dashed var(--verde);border-radius:4px;padding:9px 10px;font-weight:700;color:var(--verde);background:#f3f8f5}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--texto)}.chk input{width:auto}
+.stit{font-size:17px;font-weight:600;color:var(--verde)}
+.res td,.res th{text-align:center}.res td:first-child{text-align:left}
+@media (max-width:560px){.placar{grid-template-columns:1fr 54px auto 54px 1fr;gap:6px}.placar input{padding:9px 4px;font-size:14px}}
+/* ===== TELA DE ACESSO ===== */
+body.travado>*:not(#gate){display:none!important}
+#gate{display:none;min-height:100vh;background:var(--verde);align-items:center;justify-content:center;padding:24px 16px}
+body.travado #gate{display:flex}
+.gbox{background:#fff;width:100%;max-width:380px;border-top:6px solid var(--amarelo);padding:28px 24px;text-align:center}
+.gbox img{height:90px;margin:0 auto 10px;display:block}
+.gbox h2{font-family:'Barlow Condensed',Barlow,sans-serif;color:var(--verde);font-size:26px;margin:4px 0 2px}
+.gbox p{color:var(--sub);font-size:14px;margin:0 0 18px}
+.gbox input{text-align:center;font-size:16px;margin-bottom:12px}
+.gbox .btn{width:100%}
+.gbox .erro{display:block;min-height:20px;margin-top:10px}
+.sair{background:none;border:0;cursor:pointer;color:var(--texto);font-size:14px;padding:0}
+</style>
+</head>
+<body class="travado">
+<div id="gate">
+  <form class="gbox" id="gForm" autocomplete="off">
+    <img src="https://www.futebolcearense.com.br/2023/assets/images/logo-fcf.png" alt="Federação Cearense de Futebol" onerror="this.remove()">
+    <h2>Avaliação de Arbitragem</h2>
+    <p>Acesso restrito. Digite a senha para entrar.</p>
+    <input type="password" id="gSenha" placeholder="Senha" aria-label="Senha" required>
+    <button class="btn" type="submit">Entrar</button>
+    <span class="erro" id="gErro" role="alert"></span>
+  </form>
+</div>
+<div class="faixa"></div>
+<div class="topo">
+  <nav><a href="#">Credenciamento</a><a href="#">TJDF-CE</a><a href="#">Canal de ética</a><button class="sair" id="btnSair" type="button">Sair</button></nav>
+  <div class="redes" aria-hidden="true"><span>ig</span><span>f</span><span>x</span><span>yt</span></div>
+</div>
+<header class="cab">
+  <div class="logo">
+    <img src="https://www.futebolcearense.com.br/2023/assets/images/logo-fcf.png" alt="Federação Cearense de Futebol" class="logoimg"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div style="display:none;align-items:center;gap:10px">
+      <div class="selo">FCF</div>
+      <div class="txt">A CASA DO<b>FUTEBOL</b><b>CEARENSE</b></div>
+    </div>
+  </div>
+  <div class="menu" role="tablist">
+    <button role="tab" aria-selected="true" data-tela="form">
+      <svg viewBox="0 0 24 24"><path d="M19 3h-4.2A3 3 0 0 0 12 1a3 3 0 0 0-2.8 2H5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm-2 15-4-4 1.4-1.4 2.6 2.6 6.6-6.6L18 10l-8 8Z"/></svg>
+      AVALIAÇÃO
+    </button>
+    <button role="tab" aria-selected="false" data-tela="dash">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z"/></svg>
+      DASHBOARD
+    </button>
+  </div>
+</header>
+
+<!-- ===== TELA 1: FORMULÁRIO ===== -->
+<section id="form" class="tela ativa">
+  <div class="wrap">
+    <div class="chapeu">ARBITRAGEM</div>
+    <h1>Avaliação de desempenho · Árbitro</h1>
+    <div class="card">
+      <div class="grade">
+        <label class="c">Árbitro avaliado<select id="fArb"></select></label>
+        <label class="c">Avaliador<input id="fAval" placeholder="Nome do avaliador"></label>
+        <label class="c">Competição<select id="fComp"><option>Campeonato Cearense Série A</option><option>Campeonato Cearense Série B</option><option>Copa Fares Lopes</option><option>Cearense Feminino</option></select></label>
+        <label class="c">Data<input id="fData" type="date"></label>
+        <label class="c">Hora<input id="fHora" type="time"></label>
+        <label class="c">Cidade<input id="fCid" placeholder="Fortaleza"></label>
+        <label class="c">Estádio<input id="fEst" placeholder="Arena Castelão"></label>
+      </div>
+      <div class="placar">
+        <input id="fMand" placeholder="Mandante" aria-label="Mandante">
+        <input id="fGM" type="number" min="0" inputmode="numeric" placeholder="0" aria-label="Gols do mandante">
+        <span>x</span>
+        <input id="fGV" type="number" min="0" inputmode="numeric" placeholder="0" aria-label="Gols do visitante">
+        <input id="fVis" placeholder="Visitante" aria-label="Visitante">
+      </div>
+      <div id="jogoVar"></div>
+    </div>
+    <div class="card" id="cabBox"></div>
+    <div id="blocos"></div>
+    <details class="bloco">
+      <summary>Scout da partida<span class="nb" id="nbScout">– acertos · – erros</span></summary>
+      <div id="scoutBox"></div>
+    </details>
+    <div class="card">
+      <div class="tit">Bloco escrito</div>
+      <div class="grade" style="grid-template-columns:1fr">
+        <label class="c">Resumo<textarea id="fResumo" rows="3"></textarea></label>
+        <label class="c">Pontos positivos<textarea id="fPos" rows="3"></textarea></label>
+        <label class="c">A melhorar<textarea id="fMel" rows="3"></textarea></label>
+      </div>
+    </div>
+    <div class="acoes">
+      <span class="erro" id="erro" role="alert"></span>
+      <button class="btn sec" id="btnLimpar" type="button">Limpar</button>
+      <button class="btn" id="btnEnviar" type="button">Enviar avaliação</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TELA 2: DASHBOARD ===== -->
+<section id="dash" class="tela">
+  <div class="db">
+    <aside class="side">
+      <div class="marca">FCF<small>Desenvolvimento de arbitragem</small></div>
+      <label>Árbitro<select id="dArb"></select></label>
+      <label>Competição<select id="dComp"><option value="">Todas</option><option>Campeonato Cearense Série A</option><option>Campeonato Cearense Série B</option><option>Copa Fares Lopes</option><option>Cearense Feminino</option></select></label>
+      <label>Grupo<select id="dGrupo"><option value="">Todos</option><option>A</option><option>B</option><option>C</option></select></label>
+      <label>Sexo<select id="dSexo"><option value="">Todos</option><option>Masculino</option><option>Feminino</option></select></label>
+      <button class="btn sec" id="btnReset" type="button" style="font-size:13px;padding:8px">Restaurar dados de exemplo</button>
+    </aside>
+    <div class="main" id="dMain"></div>
+  </div>
+</section>
+
+<footer class="rod">Federação Cearense de Futebol · CNPJ 07.036.676/0001-84 · Rua Paulino Nogueira, 77, Benfica · (85) 3206.6500</footer>
+<input type="file" id="upFoto" accept="image/*" hidden>
+
+<script>
+/* ---------- ACESSO (senha única) ---------- */
+(function(){
+  const HASH='3aa95fa1da35c733f3270f94cce271677904105f08a60eb8e526a3d3512ccbc6';
+  const ok=()=>{document.body.classList.remove('travado');window.scrollTo(0,0)};
+  try{if(sessionStorage.getItem('fcf_ok')===HASH)ok()}catch(e){}
+  async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  document.getElementById('gForm').addEventListener('submit',async e=>{
+    e.preventDefault();const el=document.getElementById('gSenha');
+    if(await sha(el.value)===HASH){try{sessionStorage.setItem('fcf_ok',HASH)}catch(x){}el.value='';document.getElementById('gErro').textContent='';ok()}
+    else{document.getElementById('gErro').textContent='Senha incorreta.';el.select()}
+  });
+  document.getElementById('btnSair').onclick=()=>{try{sessionStorage.removeItem('fcf_ok')}catch(x){}document.body.classList.add('travado');document.getElementById('gSenha').focus()};
+  if(document.body.classList.contains('travado'))document.getElementById('gSenha').focus();
+})();
+/* ---------- ESCALAS DOS BLOCOS ---------- */
+const E  ={ops:[['Excelente',5],['Ótimo',4],['Bom',3],['Regular',2],['Insuficiente',1]],na:'Não observado'};
+const E0 ={ops:E.ops,na:null};
+const EG ={ops:E.ops,na:'Não houve gol'};
+const S  ={ops:[['Sempre',5],['Frequentemente',4],['Às vezes',3],['Raramente',2],['Nunca',1]],na:null};
+const SN ={ops:[['Sim',5],['Às vezes',3],['Não',1]],na:'Não observado'};
+const SNi={ops:[['Não',5],['Às vezes',3],['Sim',1]],na:'Não observado'};
+const T22={ops:[['Todo o jogo',5],['Quase todo o jogo',4],['Do início até parte do 2T',3],['Apenas o 1T todo',2],['Apenas uma parte do 1T',1]],na:'Não observado'};
+const V40={ops:[['Sim, todas',5],['Sim, algumas',3],['Sim, quase nenhuma',2],['Não',1]],na:'Não ocorreu'};
+
+/* ---------- BLOCOS (slides 3 a 10) — pesos só no cálculo ---------- */
+const BLOCOS=[
+ {id:'b1',nome:'Decisões técnicas e disciplinares',curto:'Decisões',itens:[
+  ['1','Conceito geral: técnicas e disciplinares',5,E,1],
+  ['2','Reconhecer faltas e não faltas',4,E],
+  ['3','Mãos',4,E],
+  ['4','Simulações claras',2,E]]},
+ {id:'b2',nome:'Controle de jogo',curto:'Controle de jogo',itens:[
+  ['5','Conceito geral: controle de jogo',5,E,1],
+  ['6','Possui bom entendimento da lei da vantagem?',3,SN],
+  ['7','Controlar situações de reprovação com palavras ou ações',5,E],
+  ['8','Controle das áreas técnicas',5,E],
+  ['9','Ações preventivas',4,E],
+  ['10','Controlar a distância regulamentar nos reinícios de jogo',3,E],
+  ['11','Comemorações de gols',2,EG],
+  ['12','Situações de retardar o reinício de jogo',3,E],
+  ['13','Situações de conflitos',4,E]]},
+ {id:'b3',nome:'Mental',curto:'Mental',itens:[
+  ['14','Conceito geral: mental',2,E,1],
+  ['15','Confiança nas tomadas de decisões',3,E],
+  ['16','Linguagem corporal (gestos, postura, expressões etc.)',2,E,0,'Se transmite autoridade, segurança e comunicação eficaz. Expressões faciais, postura e gestos impactam a percepção dos jogadores e a condução do jogo.'],
+  ['17','Controle emocional',3,E,0,'Capacidade de adequar o equilíbrio emocional às situações e lidar com as pressões, demonstrando segurança, autoridade e respeito.']]},
+ {id:'b4',nome:'Condição física',curto:'Condição física',itens:[
+  ['18','Conceito geral: condição física',4,E,1],
+  ['19','Aspecto físico (estético)',4,E],
+  ['20','Correr com diferentes estilos (frontal, lateral, costas, giros etc.) com boa mecânica',3,E],
+  ['21','Aceleração, velocidade e mudança de ritmo e/ou direção, quando necessário',5,E],
+  ['22','Até que momento sua condição física atendeu às demandas do jogo?',5,T22]]},
+ {id:'b5',nome:'Leitura e posicionamento',curto:'Leitura e posic.',itens:[
+  ['23','Conceito geral: leitura e posicionamento',4,E0,1],
+  ['24','Proximidade apropriada da jogada',3,S],
+  ['25','Busca por melhor ângulo de visão',3,S],
+  ['26','Controle da área penal',5,S],
+  ['27','Antecipação à seguinte fase da jogada',4,E0],
+  ['28','Posicionamento nos reinícios',3,S],
+  ['29','Deslocamento imediato após reinícios',2,S]]},
+ {id:'b6',nome:'Trabalho em equipe',curto:'Trab. em equipe',itens:[
+  ['30','Conceito geral: trabalho em equipe',1,E,1],
+  ['32','Decisões relativas à Regra 11 (trabalho em equipe)',5,E,0,'Decisões importantes e/ou interpretativas em que houve intervenção do árbitro.'],
+  ['33','Infrações relativas à Regra 12 (trabalho em equipe)',4,E,0,'Decisões importantes/interpretativas em que houve necessidade de intervenção do árbitro.'],
+  ['34','Infrações dentro/fora da área penal',3,E],
+  ['35','Decisões de gol/não gol',3,E],
+  ['35.1','Comunicação',3,E]]},
+ {id:'b7',nome:'VAR',curto:'VAR',itens:[
+  ['36','Conceito geral: VAR',3,E,1],
+  ['37','Delay de apito',3,SNi],
+  ['38','Gestual protocolar',1,E],
+  ['39','Gestão de campo em situações de checagens/revisões',2,E],
+  ['40','As decisões protocolares (VAR) foram bem decididas em campo?',3,V40]]}
+];
+
+/* ---------- CABEÇALHO ---------- */
+const GRAUS=[['Normal','Partida com dificuldade normal, com poucas situações difíceis'],['Média','Partida média, com algumas decisões difíceis'],['Alta','Partida difícil, com muitas decisões difíceis']];
+const INFL=['Positiva','Neutra','Negativa'];
+const INT_N=['Não','Sim, 1','Sim, 2','Sim, 3 ou +'];
+const intN=v=>({'Sim, 1':1,'Sim, 2':2,'Sim, 3 ou +':3}[v]||0);
+
+/* ---------- SCOUT (Proposta de relatório) ---------- */
+const GRAU_L=['Fácil','Médio','Difícil'];
+const T_CART=['1º Tempo','2º Tempo','Intervalo','Pós jogo'];
+const T_JOGO=['1º Tempo','2º Tempo'];
+const MOT_CA=['JT – Falta temerária','Ataque promissor','Conduta antidesportiva','DOGSO com disputa','Outros'];
+const DEC_CA=['Sem falta','JI','Promissor com disputa','Ataque NÃO promissor','CV','Outros'];
+const MOT_CV=['JBG','DOGSO (fora da área)','DOGSO sem disputa','Conduta violenta','2º CA','Ofensas','Outros'];
+const DEC_CV=['Sem cartão','CA por ataque promissor','CA por JT – Falta temerária','CA por conduta antidesportiva','2º CA mal aplicado','CA por DOGSO com disputa','Ofensas','Outros'];
+const MOT_CV_N=['JBG','DOGSO (fora da área)','DOGSO (tiro penal sem disputa)','Conduta violenta','Impedir gol com a mão','2º CA','Ofensas','Outros'];
+const REV='rev=Sim, FACTUAL|Sim, OFR';
+// campo: [chave, rótulo, tipo, opções, condição]
+const aplicado=(mot,dec,nome)=>[
+  ['rel','Relato da súmula','txt'],['eq','Equipe infratora','eq'],['t','Momento','tempo',T_CART],
+  ['dec',nome+' aplicado (decisão disciplinar final)','r',['Certo','Errado','Sem imagem']],
+  ['mot','Motivo relatado','r',['Certo','Errado'],'dec=Certo'],
+  ['motc','Qual seria o motivo certo?','r',mot,'dec=Certo&mot=Errado'],
+  ['decc','Qual seria a decisão certa?','r',dec,'dec=Errado'],
+  ['gr','Grau de dificuldade do lance','r',GRAU_L,'dec=Errado']];
+const penal=(m)=>[
+  ['eq','Equipe infratora','eq'],['t','Momento','tempo',T_JOGO],['mot','Motivo','r',['Falta','Mão']],
+  ['ini','Decisão inicial (campo)','r',['Correta','Incorreta']],
+  ...(m?[['por','Essa decisão foi tomada por','r',['Árbitro','Assistente','4º ou 5º árbitro']]]:[]),
+  ['rev','Houve revisão do VAR?','r',['Sim, FACTUAL','Sim, OFR','Não'],'VAR'],
+  ['pod','O árbitro poderia decidir em campo?','r',['Sim','Não'],'VAR&'+REV],
+  ['fin','Decisão final (após VAR)','r',m?['Penal correto','Penal não marcado incorreto']:['Penal não marcado correto','Penal incorreto'],'VAR&'+REV+'&ini=Correta'],
+  ['fin','Decisão final (após VAR)','r',m?['Penal incorreto','Penal não marcado correto']:['Penal correto','Penal não marcado incorreto'],'VAR&'+REV+'&ini=Incorreta'],
+  ['gol','Saiu gol?','r',['Sim','Não']],['gr','Grau de dificuldade do lance','r',GRAU_L]];
+const SUBS={
+ penM:{n:'Pênaltis MARCADOS',ev:'Pênalti marcado',campos:penal(1)},
+ penN:{n:'Pênaltis NÃO MARCADOS',ev:'Pênalti não marcado',campos:penal(0)},
+ caA:{n:'Cartões amarelos APLICADOS (súmula)',ev:'CA aplicado',campos:aplicado(MOT_CA,DEC_CA,'CA')},
+ caN:{n:'Deixou de aplicar cartão amarelo',ev:'CA não aplicado',campos:[['eq','Equipe infratora','eq'],['t','Momento','tempo',T_CART],['mot','Qual seria o motivo?','r',MOT_CA],['gr','Grau de dificuldade do lance','r',GRAU_L]]},
+ cvA:{n:'Cartões vermelhos APLICADOS (súmula)',ev:'CV aplicado',campos:aplicado(MOT_CV,DEC_CV,'CV')},
+ cvN:{n:'Deixou de aplicar cartão vermelho',ev:'CV não aplicado',campos:[['eq','Equipe infratora','eq'],['t','Momento','tempo',T_CART],
+   ['ini','Decisão disciplinar inicial','r',['Sem cartão','Cartão amarelo']],['mot','Qual seria o motivo?','r',MOT_CV_N],
+   ['vr','VAR recomendou revisão?','r',['Sim','Não'],'VAR'],['fin','Decisão final do árbitro','r',['Certa','Errada'],'VAR&vr=Sim'],
+   ['pod','O árbitro poderia decidir em campo?','r',['Sim','Não'],'VAR&vr=Sim'],
+   ['gr','Grau de dificuldade do lance','r',GRAU_L],['si','Lance sem imagem','chk']]},
+ delay:{n:'Delay de apito e bandeira',ev:'Delay',campos:[['res','Resultado','r',['Certo','Errado']],['t','Momento','tempo',T_JOGO]]}
+};
+const penOk=c=>c.fin?(/correto$/.test(c.fin)&&!/incorreto/.test(c.fin)):c.ini==='Correta';
+function resumoScout(sc){
+  const L=id=>sc.list[id]||[];
+  return{
+    CA:[L('caA').filter(c=>c.dec==='Certo').length,L('caA').filter(c=>c.dec==='Errado').length,L('caN').length],
+    CV:[L('cvA').filter(c=>c.dec==='Certo').length,L('cvA').filter(c=>c.dec==='Errado').length,L('cvN').length],
+    PK:[L('penM').filter(penOk).length,L('penM').filter(c=>!penOk(c)).length,L('penN').filter(c=>!penOk(c)).length],
+    delay:[L('delay').filter(c=>c.res==='Certo').length,L('delay').filter(c=>c.res==='Errado').length]};
+}
+
+/* ---------- DADOS ---------- */
+const ARB_EX=[
+ {id:'a1',nome:'Rafael Menezes Albuquerque',cidade:'Fortaleza',grupo:'A',idade:34,sexo:'Masculino'},
+ {id:'a2',nome:'Juliana Castro Bezerra',cidade:'Juazeiro do Norte',grupo:'A',idade:31,sexo:'Feminino'},
+ {id:'a3',nome:'Marcos Vinícius Holanda',cidade:'Sobral',grupo:'B',idade:39,sexo:'Masculino'},
+ {id:'a4',nome:'Diego Sampaio Leitão',cidade:'Crato',grupo:'B',idade:28,sexo:'Masculino'},
+ {id:'a5',nome:'Ana Paula Girão',cidade:'Caucaia',grupo:'C',idade:26,sexo:'Feminino'}
+];
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let ARB=ld('fcf_arb',null)||ARB_EX;
+let AVAL=ld('fcf_aval5',null);
+let FOTOS=ld('fcf_fotos',{});
+
+/* ---------- CÁLCULO ---------- */
+function notaBloco(b,resp){let s=0,m=0;b.itens.forEach(([id,,p])=>{const r=resp[id];if(r&&!r.na){s+=p*r.v;m+=p*5}});return m?s/m*10:null}
+function notas(av){const nb=BLOCOS.map(b=>notaBloco(b,av.resp));const v=nb.filter(x=>x!=null);return{nb,geral:v.length?v.reduce((a,c)=>a+c,0)/v.length:null}}
+const med=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((p,c)=>p+c,0)/v.length:null};
+const fmt=n=>n==null?'–':n.toFixed(1).replace('.',',');
+const fmt2=n=>n==null?'–':n.toFixed(2).replace('.',',');
+
+function exemplo(){
+  let s=7;const r=()=>(s=(s*9301+49297)%233280)/233280;const pick=a=>a[Math.floor(r()*a.length)];
+  const jogos=[['Ceará','Fortaleza'],['Ferroviário','Floresta'],['Iguatu','Maracanã'],['Caucaia','Horizonte'],['Barbalha','Tirol'],['Atlético-CE','Pacajus']];
+  const comps=['Campeonato Cearense Série A','Campeonato Cearense Série B','Copa Fares Lopes'];
+  const base={a1:4.3,a2:4.1,a3:3.6,a4:3.3,a5:3.1};const out=[];
+  ARB_EX.forEach(a=>{for(let n=0;n<5;n++){
+    const q=base[a.id];const comVar=n%2===0;const resp={};
+    BLOCOS.forEach((b,bi)=>{if(b.id==='b7'&&!comVar)return;b.itens.forEach(([id,,,esc])=>{
+      if(esc.na&&r()<.06){resp[id]={na:true};return}
+      let v=Math.round(q+(bi===6?-.5:0)+(r()-.5)*1.8);v=Math.max(1,Math.min(5,v));
+      const op=esc.ops.reduce((p,c)=>Math.abs(c[1]-v)<Math.abs(p[1]-v)?c:p);resp[id]={l:op[0],v:op[1]};
+    })});
+    const erro=()=>r()<.1*(5-q);
+    const ev=(campos)=>Object.assign({eq:r()<.5?'M':'V',t:pick(T_JOGO),min:String(Math.floor(r()*45)+1)},campos);
+    const list={
+      caA:Array.from({length:2+Math.floor(r()*5)},()=>ev({dec:erro()?'Errado':'Certo',mot:'Certo'})),
+      caN:Array.from({length:erro()?1:0},()=>ev({mot:pick(MOT_CA),gr:pick(GRAU_L)})),
+      cvA:Array.from({length:r()<.25?1:0},()=>ev({dec:erro()?'Errado':'Certo',mot:'Certo'})),
+      cvN:Array.from({length:r()<.1?1:0},()=>ev({ini:'Sem cartão',mot:pick(MOT_CV_N),gr:pick(GRAU_L)})),
+      penM:[],penN:[],delay:comVar?Array.from({length:Math.floor(r()*3)},()=>ev({res:r()<.8?'Certo':'Errado'})):[]};
+    const pen=r()<.4;
+    if(pen){list.penM=Array.from({length:1+Math.floor(r()*2)},()=>ev({mot:'Falta',ini:erro()?'Incorreta':'Correta',gol:'Sim',gr:pick(GRAU_L)}));
+      if(r()<.3)list.penN=[ev({mot:'Falta',ini:erro()?'Incorreta':'Correta',gol:'Não',gr:pick(GRAU_L)})]}
+    const [mand,vis]=jogos[(n+a.id.charCodeAt(1))%6];
+    const nd={resp};const algo=notas(nd).geral;
+    out.push({arb:a.id,aval:'Avaliador exemplo',comp:comps[n%3],mand,vis,gm:Math.floor(r()*3),gv:Math.floor(r()*3),cid:'Fortaleza',est:'Arena Castelão',data:`2026-0${4+n}-1${n}`,hora:'16:00',
+      cab:{var:comVar?'Sim':'Não',grau:pick(['Normal','Média','Alta']),inf:r()<.7?'Neutra':(r()<.5?'Positiva':'Negativa'),intG:r()<.05*(5-q)?'Sim':'Não',intP:r()<.08*(5-q)?pick(INT_N.slice(1,3)):'Não',intV:comVar&&r()<.2?'Sim, 1':'Não',
+        notaA:Math.round(Math.min(10,Math.max(0,algo+(r()-.5)*1.4))*100)/100},
+      scout:{gates:{pen:pen?'Sim':'Não'},list},resp,
+      resumo:'Boa leitura de jogo e postura firme nos momentos de pressão.',pos:'Posicionamento em lances de área, comunicação com assistentes.',mel:'Tempo de reação em situações de VAR.'});
+  }});
+  return out;
+}
+if(!AVAL){AVAL=exemplo();sv('fcf_aval5',AVAL)}
+
+/* ---------- HELPERS DE FORMULÁRIO ---------- */
+const val=n=>{const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:null};
+const comVar=()=>val('cVar')!=='Não';
+const rg=(name,ops,lbl)=>`<div class="campo"><div class="lbl">${lbl}</div><div class="ops" role="radiogroup" aria-label="${lbl}">${ops.map(o=>`<label><input type="radio" name="${name}" value="${o}"><span>${o}</span></label>`).join('')}</div></div>`;
+function nomeTime(e){const v=document.getElementById(e==='M'?'fMand':'fVis').value.trim();return v||(e==='M'?'Mandante':'Visitante')}
+function atualizarTimes(){['M','V'].forEach(e=>document.querySelectorAll('.nm'+e).forEach(s=>s.textContent=nomeTime(e)))}
+const tempoF=(p,ops)=>`<div class="tempo"><select name="${p}_t" aria-label="Tempo"><option value="">Tempo</option>${ops.map(o=>`<option>${o}</option>`).join('')}</select><input name="${p}_min" type="number" min="0" max="130" inputmode="numeric" placeholder="min" aria-label="Minuto"></div>`;
+function campoHTML([k,l,t,ops,cond],p){
+  const w=h=>`<div class="cond"${cond?` data-if="${cond}"`:''}>${h}</div>`;
+  switch(t){
+    case 'r':return w(rg(`${p}_${k}`,ops,l));
+    case 'eq':return w(`<div class="campo"><div class="lbl">${l}</div><div class="ops" role="radiogroup" aria-label="${l}">${['M','V'].map(e=>`<label><input type="radio" name="${p}_eq" value="${e}"><span class="nm${e}">${nomeTime(e)}</span></label>`).join('')}</div></div>`);
+    case 'tempo':return w(`<div class="campo"><div class="lbl">${l}</div>${tempoF(p,ops)}</div>`);
+    case 'txt':return w(`<label class="c campo">${l}<textarea name="${p}_${k}" rows="2"></textarea></label>`);
+    case 'chk':return w(`<label class="chk campo"><input type="checkbox" name="${p}_${k}" value="Sim"> ${l}</label>`);
+  }
+}
+function lerBloco(el){const o={};el.querySelectorAll('[name]').forEach(i=>{const c=i.closest('.cond');if(c&&c.hidden)return;const k=i.name.split('_').pop();
+  if(i.type==='radio'){if(i.checked)o[k]=i.value;else if(!(k in o))o[k]=null}
+  else if(i.type==='checkbox')o[k]=i.checked?'Sim':'Não';else o[k]=i.value});return o}
+function aplicarConds(card){
+  const get=k=>{const e=card.querySelector(`.cond:not([hidden]) input[name$="_${k}"]:checked`);return e?e.value:null};
+  for(let pass=0;pass<3;pass++)card.querySelectorAll('.cond[data-if]').forEach(c=>{
+    c.hidden=!c.dataset.if.split('&').every(tok=>tok==='VAR'?comVar():(([k,v])=>v.split('|').includes(get(k)))(tok.split('=')))});
+}
+function aplicarVar(){
+  const v=comVar();document.querySelectorAll('[data-var]').forEach(e=>e.hidden=!v);
+  document.querySelectorAll('.evcard').forEach(aplicarConds);
+}
+
+/* ---------- MONTAGEM DO FORMULÁRIO ---------- */
+const subHTML=id=>`<div class="campo"><div class="stit">${SUBS[id].n}</div>
+  <label class="c tot">Quantidade<input type="number" min="0" max="20" inputmode="numeric" value="0" data-lista="${id}"></label><div class="cards" id="cards_${id}"></div></div>`;
+function montarForm(){
+  document.getElementById('fArb').innerHTML='<option value="">Selecione</option>'+ARB.map(a=>`<option value="${a.id}">${a.nome}</option>`).join('');
+  document.getElementById('fData').valueAsDate=new Date();
+  document.getElementById('cabBox').innerHTML=`<div class="tit">Cabeçalho da avaliação</div>
+    <div class="grade"><label class="c" style="max-width:280px">Nota do árbitro (dada pelo analista)<input id="fNotaA" type="number" min="0" max="10" step="0.01" inputmode="decimal" placeholder="Ex.: 7,50"></label></div>
+    <div class="campo"><div class="lbl">Grau de dificuldade</div>
+      <div class="hint">${GRAUS.map(g=>`<b>${g[0]}</b> · ${g[1]}`).join('<br>')}</div>
+      <div class="ops" role="radiogroup" aria-label="Grau de dificuldade">${GRAUS.map(g=>`<label><input type="radio" name="cGrau" value="${g[0]}"><span>${g[0]}</span></label>`).join('')}</div></div>
+    ${rg('cInf',INFL,'Influência')}
+    ${rg('cIntG',['Sim','Não'],'Interferência no ganhador')}
+    ${rg('cIntP',INT_N,'Interferência no placar')}
+    <div data-var>${rg('cIntV',INT_N,'Interferência do VAR')}</div>`;
+  document.getElementById('jogoVar').innerHTML=rg('cVar',['Sim','Não'],'Jogo com VAR?');
+  document.getElementById('scoutBox').innerHTML=`
+    <div class="sitem"><div class="stit">Resumo do scout</div>
+      <div class="tabwrap"><table class="scout res"><thead><tr><th></th><th>Marcados · acerto</th><th>Marcados · erro</th><th>Não marcados · erro</th></tr></thead><tbody id="resBody"></tbody></table></div>
+      <div class="nota-t">Calculado automaticamente a partir dos lances abaixo.</div></div>
+    <div class="sitem">${rg('gpen',['Não','Sim'],'Houve alguma situação de pênalti, marcado ou não marcado (certo ou errado)?')}
+      <div class="gated" data-gate="gpen" hidden>${subHTML('penM')}${subHTML('penN')}</div></div>
+    <div class="sitem">${subHTML('caA')}${subHTML('caN')}</div>
+    <div class="sitem">${subHTML('cvA')}${subHTML('cvN')}</div>
+    <div class="sitem" data-var>${subHTML('delay')}</div>`;
+  document.getElementById('blocos').innerHTML=BLOCOS.map((b,i)=>`
+   <details class="bloco" ${b.id==='b7'?'data-var':''}>
+    <summary>${i+1}. ${b.nome}<span class="nb" id="nb_${b.id}">Nota –</span></summary>
+    ${b.itens.map(([id,txt,p,esc,cg,dica])=>`
+     <div class="item ${cg?'cg':''}">
+      <div class="q"><span>${id} · ${txt}</span></div>
+      ${dica?`<div class="dica">${dica}</div>`:''}
+      <div class="ops" role="radiogroup" aria-label="${txt}">
+       ${esc.ops.map(([l,v])=>`<label><input type="radio" name="q${id}" value="${v}" data-l="${l}"><span>${l}</span></label>`).join('')}
+       ${esc.na?`<label><input type="radio" class="na" name="q${id}" value="na" data-l="${esc.na}"><span>${esc.na}</span></label>`:''}
+      </div>
+      <div class="min"><input id="pp${id}" placeholder="Pontos positivos (minutos)"><input id="pm${id}" placeholder="Pontos a melhorar (minutos)"></div>
+     </div>`).join('')}
+   </details>`).join('');
+  document.getElementById('nbScout').textContent='– acertos · – erros';
+  atualizarResumo();
+}
+const clampN=(v,max)=>Math.min(max,Math.max(0,parseInt(v)||0));
+function syncCards(inp){
+  const id=inp.dataset.lista,s=SUBS[id];const n=clampN(inp.value,20);const box=document.getElementById('cards_'+id);let cs=box.querySelectorAll('.evcard');
+  for(let k=cs.length;k<n;k++){const d=document.createElement('div');d.className='evcard';
+    d.innerHTML=`<div class="evt">${s.ev} ${k+1}</div><div class="evgrid">${s.campos.map(c=>campoHTML(c,`${id}${k}`)).join('')}</div>`;
+    box.appendChild(d);aplicarConds(d)}
+  cs=box.querySelectorAll('.evcard');for(let k=cs.length-1;k>=n;k--)cs[k].remove();
+}
+function lerScout(){
+  const pen=val('gpen');const list={};
+  Object.keys(SUBS).forEach(id=>{
+    const off=((id==='penM'||id==='penN')&&pen!=='Sim')||(id==='delay'&&!comVar());
+    list[id]=off?[]:[...document.querySelectorAll(`#cards_${id} .evcard`)].map(lerBloco)});
+  return{gates:{pen},list};
+}
+function validarScout(sc){
+  if(!sc.gates.pen)return['Responda se houve situação de pênalti.',document.querySelector('input[name=gpen]')];
+  for(const id of Object.keys(SUBS)){
+    if(!sc.list[id].length)continue;
+    const cards=document.querySelectorAll(`#cards_${id} .evcard`);
+    for(let k=0;k<cards.length;k++){const c=cards[k];
+      const sel=c.querySelector('.cond:not([hidden]) select');if(sel&&!sel.value)return[`Informe o tempo em "${SUBS[id].ev} ${k+1}".`,c];
+      for(const g of c.querySelectorAll('.cond:not([hidden]) [role=radiogroup]'))
+        if(!g.querySelector('input:checked'))return[`Responda "${g.getAttribute('aria-label')}" em "${SUBS[id].ev} ${k+1}".`,c];
+    }
+  }
+  return null;
+}
+function atualizarResumo(){
+  const r=resumoScout(lerScout());
+  document.getElementById('resBody').innerHTML=['CA','CV','PK'].map(k=>`<tr><td>${{CA:'Cartão amarelo',CV:'Cartão vermelho',PK:'Pênalti'}[k]}</td>${r[k].map(n=>`<td>${n}</td>`).join('')}</tr>`).join('');
+  const a=r.CA[0]+r.CV[0]+r.PK[0],e=r.CA[1]+r.CA[2]+r.CV[1]+r.CV[2]+r.PK[1]+r.PK[2];
+  document.getElementById('nbScout').textContent=`${a} acertos · ${e} erros`;
+}
+function lerResp(){const r={};BLOCOS.forEach(b=>{if(b.id==='b7'&&!comVar())return;b.itens.forEach(([id])=>{const el=document.querySelector(`input[name="q${id}"]:checked`);if(!el)return;
+  r[id]=el.value==='na'?{na:true,l:el.dataset.l}:{v:+el.value,l:el.dataset.l};
+  const pp=document.getElementById('pp'+id).value,pm=document.getElementById('pm'+id).value;if(pp)r[id].pp=pp;if(pm)r[id].pm=pm})});return r}
+function atualizarNotas(){const r=lerResp();BLOCOS.forEach(b=>document.getElementById('nb_'+b.id).textContent='Nota '+fmt(notaBloco(b,r)));
+}
+
+/* ---------- EVENTOS DO FORMULÁRIO ---------- */
+const formEl=document.getElementById('form');
+['fMand','fVis'].forEach(id=>document.getElementById(id).addEventListener('input',atualizarTimes));
+formEl.addEventListener('input',e=>{if(e.target.dataset.lista){syncCards(e.target);atualizarResumo()}});
+formEl.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.name==='cVar'){aplicarVar();atualizarNotas();atualizarResumo()}
+  if(t.name==='gpen'){t.closest('.sitem').querySelector('.gated').hidden=t.value!=='Sim';atualizarResumo()}
+  const card=t.closest('.evcard');if(card){aplicarConds(card);atualizarResumo()}
+  if(t.closest('#blocos'))atualizarNotas();
+});
+function mostrarErro(msg,el){document.getElementById('erro').textContent=msg;
+  if(el){const d=el.closest('details');if(d)d.open=true;(el.closest('.evcard,.sitem,.item,.card')||el).scrollIntoView({behavior:'smooth',block:'center'})}}
+document.getElementById('btnEnviar').onclick=()=>{
+  const arb=fArb.value;
+  if(!arb)return mostrarErro('Selecione o árbitro avaliado.',fArb);
+  const cab={var:val('cVar'),grau:val('cGrau'),inf:val('cInf'),intG:val('cIntG'),intP:val('cIntP'),intV:comVar()?val('cIntV'):'Não'};
+  if(Object.values(cab).some(v=>!v))return mostrarErro('Responda todas as perguntas do cabeçalho da partida.',cabBox);
+  const na=parseFloat(String(fNotaA.value).replace(',','.'));
+  if(isNaN(na)||na<0||na>10)return mostrarErro('Informe a nota do analista (0 a 10).',fNotaA);
+  cab.notaA=na;
+  const scout=lerScout();const vs=validarScout(scout);if(vs)return mostrarErro(vs[0],vs[1]);
+  const resp=lerResp();
+  const falta=BLOCOS.filter(b=>b.id!=='b7'||comVar()).flatMap(b=>b.itens.map(i=>i[0])).filter(id=>!resp[id]);
+  if(falta.length)return mostrarErro(`Faltam ${falta.length} itens sem resposta nos blocos (ex.: item ${falta[0]}).`,document.querySelector(`input[name="q${falta[0]}"]`));
+  document.getElementById('erro').textContent='';
+  AVAL.push({arb,aval:fAval.value,comp:fComp.value,mand:nomeTime('M'),vis:nomeTime('V'),gm:fGM.value,gv:fGV.value,cid:fCid.value,est:fEst.value,data:fData.value,hora:fHora.value,
+    cab,scout,resp,resumo:fResumo.value,pos:fPos.value,mel:fMel.value});
+  sv('fcf_aval5',AVAL);limpar();dGrupo.value='';dSexo.value='';montarSelDash();dArb.value=arb;trocar('dash');
+};
+function limpar(){['fAval','fMand','fVis','fGM','fGV','fCid','fEst','fHora','fResumo','fPos','fMel'].forEach(id=>document.getElementById(id).value='');
+  fArb.value='';montarForm();aplicarVar();document.getElementById('erro').textContent=''}
+document.getElementById('btnLimpar').onclick=limpar;
+
+/* ---------- DASHBOARD ---------- */
+let chart;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function filtradas(){const c=dComp.value,g=dGrupo.value,s=dSexo.value;
+  return AVAL.filter(a=>{const p=ARB.find(x=>x.id===a.arb);return p&&(!c||a.comp===c)&&(!g||p.grupo===g)&&(!s||p.sexo===s)})}
+function montarSelDash(){const g=dGrupo.value,s=dSexo.value,atual=dArb.value;
+  const l=ARB.filter(a=>(!g||a.grupo===g)&&(!s||a.sexo===s));
+  dArb.innerHTML=l.map(a=>`<option value="${a.id}">${a.nome}</option>`).join('');
+  if(l.some(a=>a.id===atual))dArb.value=atual}
+function render(){
+  const main=document.getElementById('dMain');const av=filtradas();const arb=ARB.find(a=>a.id===dArb.value);
+  if(!arb){main.innerHTML='<div class="gl vazio">Nenhum árbitro com esses filtros.</div>';return}
+  const minhas=av.filter(a=>a.arb===arb.id).sort((a,b)=>a.data<b.data?1:-1);
+  const porArb={};av.forEach(a=>{(porArb[a.arb]=porArb[a.arb]||[]).push(notas(a).geral)});
+  const ranking=Object.entries(porArb).map(([id,l])=>[id,med(l)]).sort((a,b)=>b[1]-a[1]);
+  const pos=ranking.findIndex(r=>r[0]===arb.id)+1;
+  const grupoAv=av.filter(a=>ARB.find(x=>x.id===a.arb).grupo===arb.grupo);
+  const nbMeu=BLOCOS.map((_,i)=>med(minhas.map(a=>notas(a).nb[i])));
+  const nbGrupo=BLOCOS.map((_,i)=>med(grupoAv.map(a=>notas(a).nb[i])));
+  const geral=med(minhas.map(a=>notas(a).geral));const mGrupo=med(grupoAv.map(a=>notas(a).geral));
+  const notaA=med(minhas.map(a=>a.cab.notaA));
+  const dist={Excelente:0,'Ótimo':0,Bom:0,Regular:0,Insuficiente:0};
+  minhas.forEach(a=>Object.values(a.resp).forEach(r=>{if(r.l in dist)dist[r.l]++}));
+  const val2=nbMeu.map((n,i)=>[BLOCOS[i].nome,n]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);
+  const ini=arb.nome.split(' ').filter(p=>p.length>2).map(p=>p[0]).slice(0,2).join('');
+  const ult=minhas[0];
+  const sc={CA:[0,0,0],CV:[0,0,0],PK:[0,0,0],delay:[0,0]};
+  minhas.forEach(a=>{const r=resumoScout(a.scout);Object.keys(sc).forEach(k=>r[k].forEach((n,i)=>sc[k][i]+=n))});
+  const tc=sc.CA[0]+sc.CV[0]+sc.PK[0],te=sc.CA[1]+sc.CA[2]+sc.CV[1]+sc.CV[2]+sc.PK[1]+sc.PK[2];
+  const pct=(x,t)=>t?(x/t*100).toFixed(1).replace('.',',')+'%':'–';
+  const gr={};GRAUS.forEach(([g])=>gr[g]=minhas.filter(a=>a.cab.grau===g).length);
+  const inf={};INFL.forEach(i=>inf[i]=minhas.filter(a=>a.cab.inf===i).length);
+  const it={g:minhas.filter(a=>a.cab.intG==='Sim').length,p:minhas.reduce((s,a)=>s+intN(a.cab.intP),0),v:minhas.reduce((s,a)=>s+intN(a.cab.intV),0)};
+  const jogosVar=minhas.filter(a=>a.cab.var==='Sim').length;
+  main.innerHTML=`
+  <div class="perfil">
+    <button class="foto" id="btnFoto" aria-label="Trocar foto">${FOTOS[arb.id]?`<img src="${FOTOS[arb.id]}" alt="Foto de ${esc(arb.nome)}">`:ini}</button>
+    <div class="col">
+      <div class="barra">${esc(arb.nome)}</div>
+      <div class="lar">${esc(arb.cidade)}</div>
+      <div class="chips"><div class="lar">Grupo<br>${arb.grupo}</div><div class="lar">Idade<br>${arb.idade}</div><div class="lar" style="display:grid;place-items:center">${arb.sexo}</div></div>
+      <div class="barra" style="font-size:20px">ÁRBITRO</div>
+    </div>
+    <div class="rank">Ranking<b>${pos?pos+'º':'–'}</b><span style="font-size:14px;color:#cdd6ff">de ${ranking.length}</span></div>
+  </div>
+  <div class="kpis">
+    <div class="gl kpi"><div class="k">Avaliações</div><div class="v">${minhas.length}</div></div>
+    <div class="gl kpi" style="border-color:var(--ouro);box-shadow:0 0 14px rgba(245,208,0,.45)"><div class="k">Nota (algoritmo)</div><div class="v" style="color:var(--ok)">${fmt2(geral)}</div></div>
+    <div class="gl kpi"><div class="k">Nota (analista)</div><div class="v">${fmt2(notaA)}</div></div>
+    <div class="gl kpi"><div class="k">Média do grupo ${arb.grupo}</div><div class="v">${fmt2(mGrupo)}</div></div>
+  </div>
+  <div class="baixo">
+    <div class="gl radar"><canvas id="cRadar" aria-label="Radar das notas por bloco"></canvas></div>
+    <div class="dir">
+      <div class="gl dist"><div class="t">Distribuição de conceitos</div><div class="g">
+        ${Object.entries(dist).map(([k,v])=>`<div><div class="k">${k==='Insuficiente'?'Insuf.':k}</div><div class="v">${v}</div></div>`).join('')}</div></div>
+      <div class="gl dest"><div class="k">Melhor bloco</div><div class="v" style="color:var(--ok)">${val2[0]?val2[0][0]+' · '+fmt(val2[0][1]):'–'}</div>
+        <div class="k" style="margin-top:8px">Ponto de atenção</div><div class="v" style="color:var(--alerta)">${val2.length?val2[val2.length-1][0]+' · '+fmt(val2[val2.length-1][1]):'–'}</div></div>
+      <div class="gl dest" style="border-color:var(--neon);box-shadow:0 0 14px rgba(91,140,255,.55)"><div class="k">Última avaliação</div>
+        <div style="font-size:18px">${ult?esc(`${ult.mand} ${ult.gm??''} x ${ult.gv??''} ${ult.vis}`):'–'}</div>
+        <div class="v">${ult?fmt2(notas(ult).geral):'–'}</div><div class="k">${ult?'Grau '+ult.cab.grau.toLowerCase()+' · '+(ult.cab.var==='Sim'?'com VAR':'sem VAR'):''}</div></div>
+      ${ult&&(ult.resumo||ult.pos||ult.mel)?`<div class="gl coment"><h3>Comentários da última avaliação</h3>
+        ${ult.resumo?`<p><b>Resumo:</b> ${esc(ult.resumo)}</p>`:''}${ult.pos?`<p><b>Positivos:</b> ${esc(ult.pos)}</p>`:''}${ult.mel?`<p><b>A melhorar:</b> ${esc(ult.mel)}</p>`:''}</div>`:''}
+    </div>
+  </div>
+  <div class="extra">
+    <div class="gl bx"><div class="t">Scout</div>
+      <table><thead><tr><th></th><th>Marc. acerto</th><th>Marc. erro</th><th>Não marc. erro</th></tr></thead><tbody>
+      ${[['CA','Cartão amarelo'],['CV','Cartão vermelho'],['PK','Pênalti']].map(([k,l])=>`<tr><td>${l}</td><td>${sc[k][0]}</td>${[1,2].map(i=>`<td style="color:${sc[k][i]?'var(--alerta)':'inherit'}">${sc[k][i]}</td>`).join('')}</tr>`).join('')}
+      </tbody></table>
+      <div class="cert"><div><div class="k" style="color:#cdd6ff">Acertos</div><div style="font-size:26px;font-weight:700;color:var(--ok)">${tc}</div></div>
+        <div><div class="k" style="color:#cdd6ff">Erros</div><div style="font-size:26px;font-weight:700;color:#ff5a5a">${te}</div></div></div>
+      <div style="margin-top:6px;font-size:15px">Aproveitamento ${pct(tc,tc+te)}</div>
+    </div>
+    <div class="gl bx"><div class="t">% Partidas por grau de dificuldade</div>
+      <div class="tri">${GRAUS.map(([g])=>`<div><div class="k">${g}</div><div class="v">${pct(gr[g],minhas.length)}</div></div>`).join('')}</div>
+      <div class="t" style="margin-top:16px">Influência no grau</div>
+      <div class="tri">${INFL.map(i=>`<div><div class="k">${i}</div><div class="v" style="color:${i==='Positiva'?'var(--ok)':i==='Negativa'?'#ff5a5a':'inherit'}">${inf[i]}</div></div>`).join('')}</div>
+    </div>
+    <div class="gl bx"><div class="t">Interferências</div>
+      <div class="tri"><div><div class="k">No ganhador</div><div class="v" style="color:${it.g?'#ff5a5a':'inherit'}">${it.g}</div></div><div><div class="k">No placar (qtd)</div><div class="v" style="color:${it.p?'#ff5a5a':'inherit'}">${it.p}</div></div><div><div class="k">Do VAR (qtd)</div><div class="v">${it.v}</div></div></div>
+      <div class="t" style="margin-top:16px">VAR</div>
+      <div class="tri"><div><div class="k">Jogos c/ VAR</div><div class="v">${jogosVar}</div></div><div><div class="k">Delay certo</div><div class="v" style="color:var(--ok)">${sc.delay[0]}</div></div><div><div class="k">Delay errado</div><div class="v" style="color:${sc.delay[1]?'#ff5a5a':'inherit'}">${sc.delay[1]}</div></div></div>
+    </div>
+  </div>`;
+  document.getElementById('btnFoto').onclick=()=>upFoto.click();
+  if(chart)chart.destroy();
+  if(window.Chart)chart=new Chart(document.getElementById('cRadar'),{type:'radar',
+    data:{labels:BLOCOS.map(b=>b.curto),datasets:[
+      {label:'Árbitro',data:nbMeu,borderColor:'#f07a2c',backgroundColor:'rgba(240,122,44,.18)',pointBackgroundColor:'#f07a2c',borderWidth:3},
+      {label:'Grupo '+arb.grupo,data:nbGrupo,borderColor:'#5bb8ff',backgroundColor:'rgba(91,184,255,.12)',pointBackgroundColor:'#5bb8ff',borderWidth:3}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff',font:{size:15,family:'Barlow Condensed'}}},
+      tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{r:{min:0,max:10,ticks:{display:false,stepSize:2},grid:{color:'#3a4a9a'},angleLines:{color:'#3a4a9a'},pointLabels:{color:'#fff',font:{size:15,family:'Barlow Condensed'}}}}}});
+}
+upFoto.onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{
+  const c=document.createElement('canvas');const w=300,h=Math.round(300*img.height/img.width);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+  FOTOS[dArb.value]=c.toDataURL('image/jpeg',.8);sv('fcf_fotos',FOTOS);render();URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f);upFoto.value=''};
+dComp.onchange=render;
+['dGrupo','dSexo'].forEach(id=>document.getElementById(id).onchange=()=>{montarSelDash();render()});
+dArb.onchange=render;
+btnReset.onclick=()=>{AVAL=exemplo();sv('fcf_aval5',AVAL);render()};
+
+/* ---------- NAVEGAÇÃO ---------- */
+function trocar(t){document.querySelectorAll('.tela').forEach(s=>s.classList.toggle('ativa',s.id===t));
+  document.querySelectorAll('.menu button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tela===t));
+  if(t==='dash')render();window.scrollTo(0,0)}
+document.querySelectorAll('.menu button').forEach(b=>b.onclick=()=>trocar(b.dataset.tela));
+
+montarForm();montarSelDash();
+</script>
+</body>
+</html>
